@@ -1,0 +1,19 @@
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                    EXECUTIVE KPI DASHBOARD                          ║
+║                    Generated: 2026-10-02 19:28                        ║
+╠══════════════════════════════════════════════════════════════════════╣
+║                                                                      ║
+║  💰 Total Revenue          : £  8,887,208.89                     ║
+║  📦 Total Orders           :         18,532                          ║
+║  👥 Total Customers        :          4,338                          ║
+║  📊 Average Order Value    : £        479.56                     ║
+║  💵 Revenue Per Customer   : £      2,048.69                     ║
+║  🔁 Repeat Customer Rate   :          65.6%                          ║
+║  🛒 Avg Items Per Order    :          278.0                          ║
+║  🌍 Top Country            : United Kingdom                               ║
+║  🏆 Top Product            : PAPER CRAFT , LITTLE BIRDIE                  ║
+║  📈 Revenue Growth (M/M)   :          -9.3%                          ║
+║  🔄 Retention Proxy        :          65.6%                          ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝

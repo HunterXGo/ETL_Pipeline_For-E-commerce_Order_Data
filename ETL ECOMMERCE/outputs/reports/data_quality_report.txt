@@ -1,0 +1,317 @@
+
+================================================================================
+  PHASE 1 — DATA UNDERSTANDING
+================================================================================
+  Run started : 2026-10-02 19:27:49
+  Source file : C:\Users\karth\Downloads\ETL ECOMMERCE\data\raw\OnlineRetail.csv
+
+================================================================================
+  1. LOADING RAW DATA
+================================================================================
+  ✓ Successfully loaded 541,909 rows × 8 columns
+
+================================================================================
+  2. BASIC SHAPE & STRUCTURE
+================================================================================
+  Rows       : 541,909
+  Columns    : 8
+  Column list: ['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate', 'UnitPrice', 'CustomerID', 'Country']
+
+  Total memory usage: 69.34 MB (72,712,151 bytes)
+
+  Per-column memory usage:
+    InvoiceNo       : 7418.1 KB
+    StockCode       : 6925.8 KB
+    Description     : 18362.2 KB
+    Quantity        : 4233.8 KB
+    InvoiceDate     : 14288.7 KB
+    UnitPrice       : 4233.8 KB
+    CustomerID      : 4233.8 KB
+    Country         : 11312.6 KB
+
+================================================================================
+  3. DATA TYPES (as loaded)
+================================================================================
+  InvoiceNo       : str
+  StockCode       : str
+  Description     : str
+  Quantity        : int64
+  InvoiceDate     : str
+  UnitPrice       : float64
+  CustomerID      : float64
+  Country         : str
+
+  First 5 rows (sample):
+    InvoiceNo StockCode                         Description  Quantity         InvoiceDate  UnitPrice  CustomerID        Country
+       536365    85123A  WHITE HANGING HEART T-LIGHT HOLDER         6 2010-12-01 08:26:00       2.55     17850.0 United Kingdom
+       536365     71053                 WHITE METAL LANTERN         6 2010-12-01 08:26:00       3.39     17850.0 United Kingdom
+       536365    84406B      CREAM CUPID HEARTS COAT HANGER         8 2010-12-01 08:26:00       2.75     17850.0 United Kingdom
+       536365    84029G KNITTED UNION FLAG HOT WATER BOTTLE         6 2010-12-01 08:26:00       3.39     17850.0 United Kingdom
+       536365    84029E      RED WOOLLY HOTTIE WHITE HEART.         6 2010-12-01 08:26:00       3.39     17850.0 United Kingdom
+
+================================================================================
+  4. MISSING VALUES ANALYSIS
+================================================================================
+  ✓ InvoiceNo       :        0 missing  (  0.00%)
+  ✓ StockCode       :        0 missing  (  0.00%)
+  ⚠ Description     :    1,454 missing  (  0.27%)
+  ✓ Quantity        :        0 missing  (  0.00%)
+  ✓ InvoiceDate     :        0 missing  (  0.00%)
+  ✓ UnitPrice       :        0 missing  (  0.00%)
+  ⚠ CustomerID      :  135,080 missing  ( 24.93%)
+  ✓ Country         :        0 missing  (  0.00%)
+
+  Overall: 136,534 missing values out of 4,335,272 cells (3.15%)
+
+  Business Impact Notes:
+    • Description — 1,454 rows (0.3%) have no product description.
+      Likely data-entry gaps or system-generated adjustment records.
+      Impact: Product dimension table will have gaps.
+      Recommendation: Impute from StockCode lookup or mark 'UNKNOWN'.
+    • CustomerID — 135,080 rows (24.9%) have no customer linkage.
+      These are likely guest/anonymous purchases or POS transactions.
+      Impact: Cannot build customer-level analytics for these rows.
+      Recommendation: Keep for revenue analysis, flag for customer analytics.
+
+================================================================================
+  5. DUPLICATE DETECTION
+================================================================================
+  Exact duplicate rows (all columns): 5,268
+    → 5,268 rows are perfect copies of earlier rows.
+    → Represent 0.97% of total data.
+    → Recommendation: Remove in ETL Transform phase.
+
+  Partial duplicates (InvoiceNo, StockCode, Quantity, InvoiceDate): 5,429
+    → 161 additional rows share the same
+      invoice + product + qty + date but differ in other fields.
+    → May indicate legitimate multi-line items or data quality issues.
+
+================================================================================
+  6. UNIQUE VALUE COUNTS & CARDINALITY
+================================================================================
+  InvoiceNo       :   25,900 unique values  (cardinality: LOW)
+  StockCode       :    4,070 unique values  (cardinality: LOW)
+  Description     :    4,223 unique values  (cardinality: LOW)
+  Quantity        :      722 unique values  (cardinality: LOW)
+  InvoiceDate     :   23,260 unique values  (cardinality: LOW)
+  UnitPrice       :    1,630 unique values  (cardinality: LOW)
+  CustomerID      :    4,372 unique values  (cardinality: LOW)
+  Country         :       38 unique values  (cardinality: LOW)
+
+================================================================================
+  7. NUMERIC COLUMN STATISTICS
+================================================================================
+                   count          mean          std       min       25%       50%       75%      max        skew       kurtosis
+    Quantity    541909.0      9.552250   218.081158 -80995.00      1.00      3.00     10.00  80995.0   -0.264076  119769.160031
+    UnitPrice   541909.0      4.611114    96.759853 -11062.06      1.25      2.08      4.13  38970.0  186.506972   59005.719097
+    CustomerID  406829.0  15287.690570  1713.600303  12346.00  13953.00  15152.00  16791.00  18287.0    0.029835      -1.179982
+
+  Anomaly Flags:
+    • Quantity < 0  : 10,624 rows (returns/cancellations)
+    • Quantity == 0 : 0 rows (adjustments)
+    • UnitPrice < 0 : 2 rows
+    • UnitPrice == 0: 2,515 rows (free items / samples)
+
+================================================================================
+  8. CATEGORICAL / TEXT COLUMN ANALYSIS
+================================================================================
+
+  Column: InvoiceNo
+    Unique values: 25,900
+    Top 10 values:
+      573585                                   :   1,114  (0.21%)
+      581219                                   :     749  (0.14%)
+      581492                                   :     731  (0.13%)
+      580729                                   :     721  (0.13%)
+      558475                                   :     705  (0.13%)
+      579777                                   :     687  (0.13%)
+      581217                                   :     676  (0.12%)
+      537434                                   :     675  (0.12%)
+      580730                                   :     662  (0.12%)
+      538071                                   :     652  (0.12%)
+
+  Column: StockCode
+    Unique values: 4,070
+    Top 10 values:
+      85123A                                   :   2,313  (0.43%)
+      22423                                    :   2,203  (0.41%)
+      85099B                                   :   2,159  (0.40%)
+      47566                                    :   1,727  (0.32%)
+      20725                                    :   1,639  (0.30%)
+      84879                                    :   1,502  (0.28%)
+      22720                                    :   1,477  (0.27%)
+      22197                                    :   1,476  (0.27%)
+      21212                                    :   1,385  (0.26%)
+      20727                                    :   1,350  (0.25%)
+
+  Column: Description
+    Unique values: 4,223
+    Top 10 values:
+      WHITE HANGING HEART T-LIGHT HOLDER       :   2,369  (0.44%)
+      REGENCY CAKESTAND 3 TIER                 :   2,200  (0.41%)
+      JUMBO BAG RED RETROSPOT                  :   2,159  (0.40%)
+      PARTY BUNTING                            :   1,727  (0.32%)
+      LUNCH BAG RED RETROSPOT                  :   1,638  (0.30%)
+      ASSORTED COLOUR BIRD ORNAMENT            :   1,501  (0.28%)
+      SET OF 3 CAKE TINS PANTRY DESIGN         :   1,473  (0.27%)
+      PACK OF 72 RETROSPOT CAKE CASES          :   1,385  (0.26%)
+      LUNCH BAG  BLACK SKULL.                  :   1,350  (0.25%)
+      NATURAL SLATE HEART CHALKBOARD           :   1,280  (0.24%)
+
+  Column: InvoiceDate
+    Unique values: 23,260
+    Top 10 values:
+      2011-10-31 14:41:00                      :   1,114  (0.21%)
+      2011-12-08 09:28:00                      :     749  (0.14%)
+      2011-12-09 10:03:00                      :     731  (0.13%)
+      2011-12-05 17:24:00                      :     721  (0.13%)
+      2011-06-29 15:58:00                      :     705  (0.13%)
+      2011-11-30 15:13:00                      :     687  (0.13%)
+      2011-12-08 09:20:00                      :     676  (0.12%)
+      2010-12-06 16:57:00                      :     675  (0.12%)
+      2011-12-05 17:28:00                      :     662  (0.12%)
+      2010-12-09 14:09:00                      :     652  (0.12%)
+
+  Column: Country
+    Unique values: 38
+    Top 10 values:
+      United Kingdom                           : 495,478  (91.43%)
+      Germany                                  :   9,495  (1.75%)
+      France                                   :   8,557  (1.58%)
+      EIRE                                     :   8,196  (1.51%)
+      Spain                                    :   2,533  (0.47%)
+      Netherlands                              :   2,371  (0.44%)
+      Belgium                                  :   2,069  (0.38%)
+      Switzerland                              :   2,002  (0.37%)
+      Portugal                                 :   1,519  (0.28%)
+      Australia                                :   1,259  (0.23%)
+
+  Cancellation invoices (start with 'C'): 9,288 (1.71%)
+
+  Countries represented: 38
+    Dominant market: United Kingdom — 495,478 transactions (91.4%)
+
+================================================================================
+  9. DATE RANGE ANALYSIS
+================================================================================
+  Earliest transaction : 2010-12-01 08:26:00
+  Latest transaction   : 2011-12-09 12:50:00
+  Date span            : 373 days (~12 months)
+
+  Monthly transaction volume:
+    2010-12 :  42,481  ████████████████████
+    2011-01 :  35,147  ████████████████
+    2011-02 :  27,707  █████████████
+    2011-03 :  36,748  █████████████████
+    2011-04 :  29,916  ██████████████
+    2011-05 :  37,030  █████████████████
+    2011-06 :  36,874  █████████████████
+    2011-07 :  39,518  ██████████████████
+    2011-08 :  35,284  ████████████████
+    2011-09 :  50,226  ███████████████████████
+    2011-10 :  60,742  ████████████████████████████
+    2011-11 :  84,711  ████████████████████████████████████████
+    2011-12 :  25,525  ████████████
+
+================================================================================
+  10. FACT vs DIMENSION TABLE IDENTIFICATION
+================================================================================
+
+  This flat file contains a DENORMALIZED transactional dataset.
+  For a proper star-schema data warehouse, we decompose it as follows:
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                     STAR SCHEMA DESIGN                     │
+  ├─────────────────────────────────────────────────────────────┤
+  │                                                             │
+  │   dim_customers ──┐                                         │
+  │     CustomerID    │                                         │
+  │     Country       ├──►  fact_transactions                   │
+  │     FirstPurchase │       InvoiceNo                         │
+  │                   │       StockCode  ◄── dim_products       │
+  │   dim_date ───────┤       CustomerID      StockCode         │
+  │     Date          │       DateKey          Description      │
+  │     Year          │       Quantity         AvgUnitPrice     │
+  │     Month         │       UnitPrice                         │
+  │     Quarter       │       TotalAmount                       │
+  │     DayOfWeek     │       IsCancellation                    │
+  │                   │                                         │
+  └─────────────────────────────────────────────────────────────┘
+
+  FACT TABLE (fact_transactions):
+    - Grain: One row per invoice line item
+    - Measures: Quantity, UnitPrice, TotalAmount
+    - Foreign keys: CustomerID, StockCode, DateKey
+    - Additive measures allow SUM, AVG, COUNT aggregations
+
+  DIMENSION TABLES:
+    - dim_customers : Customer attributes & geography
+    - dim_products  : Product catalog with descriptions & pricing
+    - dim_date      : Calendar dimension for time-based analysis
+
+
+================================================================================
+  11. BUSINESS-CONTEXT COLUMN EXPLANATIONS
+================================================================================
+
+  InvoiceNo:
+    6-digit invoice identifier. Uniquely identifies each transaction.
+    Invoices starting with 'C' indicate CANCELLATIONS/RETURNS.
+    Multiple line items can share the same InvoiceNo (one invoice, many products).
+    Business use: Order tracking, return rate analysis.
+
+  StockCode:
+    Product code (typically 5-digit numeric or alphanumeric).
+    Acts as the primary product identifier / SKU.
+    Special codes exist: POST (postage), DOT (dotcom postage), M (manual adjustment),
+    BANKCHARGES, AMAZONFEE, etc.
+    Business use: Product-level revenue analysis, inventory management.
+
+  Description:
+    Free-text product description (e.g., 'WHITE HANGING HEART T-LIGHT HOLDER').
+    Not perfectly standardized — same product may have slight description variations.
+    Some rows have NULL descriptions (data quality issue).
+    Business use: Product categorization, search, catalog management.
+
+  Quantity:
+    Number of units purchased in this line item.
+    POSITIVE values = sales/purchases.
+    NEGATIVE values = returns/cancellations (paired with 'C' invoices).
+    Business use: Sales volume, return rate, demand forecasting.
+
+  InvoiceDate:
+    Timestamp of when the invoice was generated (MM/DD/YYYY HH:MM format).
+    Covers Dec 2010 to Dec 2011 (~13 months of data).
+    Business use: Time-series analysis, seasonality, peak hours.
+
+  UnitPrice:
+    Price per unit in GBP (British Pounds Sterling).
+    Most values are positive; zero prices indicate free items or samples.
+    Negative prices are rare anomalies.
+    Business use: Revenue calculation, price elasticity, margin analysis.
+
+  CustomerID:
+    5-digit customer identifier (float due to NaN values).
+    ~25% of rows have NULL CustomerID (anonymous/guest purchases).
+    Business use: Customer segmentation, RFM analysis, lifetime value.
+
+  Country:
+    Country where the customer is located.
+    ~90% of transactions are from 'United Kingdom'.
+    38 countries total — international e-commerce presence.
+    Business use: Geographic revenue analysis, market expansion decisions.
+
+================================================================================
+  12. SAVING DATA DICTIONARY
+================================================================================
+  ✓ Data dictionary saved to: C:\Users\karth\Downloads\ETL ECOMMERCE\docs\data_dictionary.md
+
+================================================================================
+  13. SAVING DATA QUALITY REPORT
+================================================================================
+
+================================================================================
+  END OF DATA QUALITY REPORT
+================================================================================
+  Completed : 2026-10-02 19:27:51
+  Duration  : 2.4 seconds

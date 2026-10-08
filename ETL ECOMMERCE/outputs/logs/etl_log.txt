@@ -1,0 +1,96 @@
+2026-10-02 19:27:53,006 | INFO     | ETL Pipeline started at 2026-10-02 19:27:53
+2026-10-02 19:27:53,006 | INFO     | 
+================================================================================
+  EXTRACT PHASE
+================================================================================
+2026-10-02 19:27:53,006 | INFO     | Loading raw data from: C:\Users\karth\Downloads\ETL ECOMMERCE\data\raw\OnlineRetail.csv
+2026-10-02 19:27:53,977 | INFO     | ✓ Loaded 541,909 rows × 8 columns
+2026-10-02 19:27:53,977 | INFO     | ✓ Schema validation PASSED — all expected columns present
+2026-10-02 19:27:53,980 | INFO     |   Memory usage: 69.3 MB
+2026-10-02 19:27:53,991 | INFO     |   Null counts:
+InvoiceNo           0
+StockCode           0
+Description      1454
+Quantity            0
+InvoiceDate         0
+UnitPrice           0
+CustomerID     135080
+Country             0
+2026-10-02 19:27:53,992 | INFO     |   Dtypes:
+InvoiceNo          str
+StockCode          str
+Description        str
+Quantity         int64
+InvoiceDate        str
+UnitPrice      float64
+CustomerID     float64
+Country            str
+2026-10-02 19:27:53,992 | INFO     | 
+================================================================================
+  TRANSFORM PHASE
+================================================================================
+2026-10-02 19:27:53,992 | INFO     | Step 1: Converting InvoiceDate to datetime...
+2026-10-02 19:27:54,120 | INFO     |   ✓ Date range: 2010-12-01 08:26:00 to 2011-12-09 12:50:00
+2026-10-02 19:27:54,120 | INFO     | Step 2: Flagging cancellation invoices...
+2026-10-02 19:27:54,130 | INFO     |   ✓ 9,288 cancellation line items flagged (1.7%)
+2026-10-02 19:27:54,130 | INFO     | Step 3: Flagging returns (negative quantity)...
+2026-10-02 19:27:54,133 | INFO     |   ✓ 10,624 return line items flagged
+2026-10-02 19:27:54,133 | INFO     | Step 4: Removing exact duplicate rows...
+2026-10-02 19:27:54,785 | INFO     |   ✓ Removed 5,268 exact duplicates → 536,641 rows remaining
+2026-10-02 19:27:54,785 | INFO     | Step 5: Handling missing CustomerID...
+2026-10-02 19:27:54,786 | INFO     |   Found 135,037 rows with null CustomerID (25.2%)
+2026-10-02 19:27:54,850 | INFO     |   ✓ Dropped null CustomerID rows → 401,604 rows remaining
+2026-10-02 19:27:54,850 | INFO     | Step 6: Handling missing Description...
+2026-10-02 19:27:54,852 | INFO     |   ✓ Filled 0 null descriptions with 'UNKNOWN'
+2026-10-02 19:27:54,852 | INFO     | Step 7: Removing invalid transactions...
+2026-10-02 19:27:54,892 | INFO     |   ✓ Removed 40 rows with invalid UnitPrice → 401,564 remaining
+2026-10-02 19:27:54,893 | INFO     | Step 8: Creating calculated fields...
+2026-10-02 19:27:55,355 | INFO     |   ✓ Added: TotalAmount, Year, Month, DayOfWeek, Hour, Quarter, YearMonth, DateKey
+2026-10-02 19:27:55,355 | INFO     | Step 9: Standardizing country names...
+2026-10-02 19:27:55,485 | INFO     |   ✓ Standardized 37 unique countries
+2026-10-02 19:27:55,485 | INFO     | Step 10: Optimizing data types for memory...
+2026-10-02 19:27:55,544 | INFO     |   ✓ Memory: 81.0 MB → 58.3 MB (28.1% reduction)
+2026-10-02 19:27:55,547 | INFO     | 
+================================================================================
+  BUILDING DIMENSION TABLES
+================================================================================
+2026-10-02 19:27:55,547 | INFO     | Building dim_customers...
+2026-10-02 19:27:55,668 | INFO     |   ✓ dim_customers: 4,371 customers
+2026-10-02 19:27:55,668 | INFO     | Building dim_products...
+2026-10-02 19:27:57,124 | INFO     |   ✓ dim_products: 3,684 products
+2026-10-02 19:27:57,124 | INFO     | Building dim_date...
+2026-10-02 19:27:57,227 | INFO     |   ✓ dim_date: 305 unique dates
+2026-10-02 19:27:57,227 | INFO     | 
+================================================================================
+  LOAD PHASE
+================================================================================
+2026-10-02 19:27:59,890 | INFO     | ✓ Saved fact_transactions.csv (401,564 rows)
+2026-10-02 19:27:59,910 | INFO     | ✓ Saved dim_customers.csv (4,371 rows)
+2026-10-02 19:27:59,924 | INFO     | ✓ Saved dim_products.csv (3,684 rows)
+2026-10-02 19:27:59,927 | INFO     | ✓ Saved dim_date.csv (305 rows)
+2026-10-02 19:27:59,927 | INFO     | 
+================================================================================
+  ETL PIPELINE SUMMARY
+================================================================================
+2026-10-02 19:27:59,927 | INFO     | 
+  ╔══════════════════════════════════════════════════════════════╗
+  ║                    ETL PIPELINE RESULTS                     ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Input Rows          :    541,909                         ║
+  ║  Duplicates Removed  :      5,268                         ║
+  ║  Null CustID Dropped :    135,037                         ║
+  ║  Invalid Price Removed:        40                         ║
+  ║  Cancellations Flagged:     9,288                         ║
+  ║  Returns Flagged     :     10,624                         ║
+  ║  Final Output Rows   :    401,564                         ║
+  ║  Memory Optimized    : 81.0 MB → 58.3 MB            ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Fact Table          : fact_transactions.csv                ║
+  ║  Dim: Customers      : dim_customers.csv (4,371 records)       ║
+  ║  Dim: Products       : dim_products.csv (3,684 records)        ║
+  ║  Dim: Date           : dim_date.csv (305 records)              ║
+  ╚══════════════════════════════════════════════════════════════╝
+    
+2026-10-02 19:27:59,927 | INFO     | 
+ETL Pipeline completed in 6.9 seconds
+2026-10-02 19:27:59,927 | INFO     | ================================================================================
