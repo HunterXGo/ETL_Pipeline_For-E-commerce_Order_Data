@@ -305,12 +305,14 @@ Planned Enhancements
 - [ ] Automated data-quality checks
 - [ ] Pipeline monitoring
 - [ ] Multiple data sources
+
 🎓 Academic Information
 Project: ETL Pipeline for E-commerce Order Data
 Domain: Data Warehousing & Data Mining
 Institution: Geethanjali College of Engineering and Technology
 Department: Computer Science & Engineering – Data Science
 Project Type: B.Tech Project Based Learning
+
 👨‍💻 Team
 Role	Responsibility
 🧑‍💻 Data Engineer	ETL Pipeline
